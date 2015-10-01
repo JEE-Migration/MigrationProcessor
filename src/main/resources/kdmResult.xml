@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<migration 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation ="kdmResult.xsd">
+	<microservices>
+		<microservice name="A">
+			<qualifiedType>co.uniandes.app.MyClassA</qualifiedType>
+			<qualifiedType>co.uniandes.app.MyInterfaceA</qualifiedType>
+			<qualifiedType>co.uniandes.app.MyTypeA</qualifiedType>
+		</microservice>
+		<microservice name="B">
+			<qualifiedType>co.uniandes.app.MyClassB</qualifiedType>
+			<qualifiedType>co.uniandes.app.MyInterfaceB</qualifiedType>
+			<qualifiedType>co.uniandes.app.MyTypeB</qualifiedType>
+		</microservice>
+			<microservice name="C">
+			<qualifiedType>co.uniandes.app.MyClassC</qualifiedType>
+			<qualifiedType>co.uniandes.app.MyInterfaceC</qualifiedType>
+			<qualifiedType>co.uniandes.app.MyTypeC</qualifiedType>
+		</microservice>
+	</microservices>
+	
+	<relationships>
+		<attribute>
+			<from>A</from>
+			<to>B</to>
+			<annotations>
+				<annotation>CDI</annotation>
+			</annotations>
+		</attribute>
+		<methodInvocation>
+			<from>B</from>
+			<to>A</to>
+			<methodSignature>public void foo(int a)</methodSignature>
+		</methodInvocation>	
+		
+		<methodParameter>
+			<from>A</from>
+			<to>C</to>
+			<methodSignature>public int bar(MyClassC myObject)</methodSignature>
+		</methodParameter>	
+	</relationships>
+</migration>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>co.edu.uniandes</groupId>
+    <artifactId>MigrationProcessor</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <!-- PROPERTIES -->
+    <properties>
+        <!--<processor>${project.basedir}/src/main/java/uniandes/migration/processor/CreateMicroServiceAnnotationProcessor.java</processor>-->
+        <processor>uniandes.migration.processor.CreateMicroServiceAnnotationProcessor</processor>
+        <legacyPath>${project.basedir}/src/legacy</legacyPath>
+    </properties>
+
+
+    <!-- EXECUTION PROFILE -->
+    <profiles>
+        <profile>
+            <id>exec_migration_step_one</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>microservice_annotation</id>
+                                <phase>process-sources</phase>
+
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>java</executable>
+                                    <arguments>
+                                        <argument>-classpath</argument>
+                                        <classpath />
+                                        <argument>uniandes.migration.invoker.Invoker</argument>
+                                        <argument>-Processor</argument>
+                                        <argument>${processor}</argument>
+                                        <argument>-LegacyPath</argument>
+                                        <argument>${legacyPath}</argument>
+                                    </arguments>
+                                    <classpathScope>compile</classpathScope>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>fr.inria.gforge.spoon</groupId>
+            <artifactId>spoon-core</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+
+    </dependencies>
+
+</project>

@@ -1,0 +1,92 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="migration">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" ref="microservices"/>
+                <xs:element maxOccurs="1" minOccurs="1" ref="relationships"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="microservices">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="microservice"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="microservice">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="qualifiedType" type="xs:string"/>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" use="required" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="relationships">
+        <xs:complexType>
+            <xs:sequence maxOccurs="unbounded" minOccurs="0">
+            	<xs:choice>
+            		<xs:element ref="attribute"/>
+            		<xs:element ref="methodInvocation"/>
+            		<xs:element ref="methodParameter"/>
+            	</xs:choice>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="attribute">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="relation">
+                    <xs:sequence>
+                        <xs:element  minOccurs="1" maxOccurs="unbounded" name="annotations">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="annotation" minOccurs="1" maxOccurs="1" type="xs:string"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="methodInvocation">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="relation">
+                    <xs:sequence>
+                        <xs:element  minOccurs="0" maxOccurs="1" name="methodSignature" type="xs:string"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="methodParameter">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="relation">
+                    <xs:sequence>
+                        <xs:element  minOccurs="0" maxOccurs="1" name="methodSignature" type="xs:string"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="relation">
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="from" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="to" type="xs:string"/>
+            </xs:sequence>
+    </xs:complexType>
+    
+
+</xs:schema>
+
+
