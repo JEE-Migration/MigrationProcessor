@@ -60,7 +60,7 @@
             <xs:complexContent>
                 <xs:extension base="relation">
                     <xs:sequence>
-                        <xs:element  minOccurs="0" maxOccurs="1" name="methodSignature" type="xs:string"/>
+                        <xs:element  minOccurs="0" maxOccurs="1" name="method" type="signature"/>
                     </xs:sequence>
                 </xs:extension>
             </xs:complexContent>
@@ -72,7 +72,7 @@
             <xs:complexContent>
                 <xs:extension base="relation">
                     <xs:sequence>
-                        <xs:element  minOccurs="0" maxOccurs="1" name="methodSignature" type="xs:string"/>
+                        <xs:element  minOccurs="0" maxOccurs="1" name="method" type="signature"/>
                     </xs:sequence>
                 </xs:extension>
             </xs:complexContent>
@@ -81,11 +81,55 @@
 
     <xs:complexType name="relation">
             <xs:sequence>
-                <xs:element maxOccurs="1" minOccurs="1" name="from" type="xs:string"/>
-                <xs:element maxOccurs="1" minOccurs="1" name="to" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="from">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="qualifiedType" type="xs:string"/>
+                            <xs:element name="sourceMicroservice" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element maxOccurs="1" minOccurs="1" name="to">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="qualifiedType" type="xs:string"/>
+                            <xs:element name="targetMicroservice" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
             </xs:sequence>
     </xs:complexType>
-    
+
+    <xs:complexType name="signature">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="1" name="visibility">
+              <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                      <xs:enumeration value="public"/>
+                      <xs:enumeration value="private"/>
+                      <xs:enumeration value="protected"/>
+                  </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="1" name="returnType" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="1" name="methodName" type="xs:string"/>
+            <xs:element minOccurs="0" name="parameters">
+                <xs:complexType>
+                    <xs:sequence>
+                    	<xs:element minOccurs="1" maxOccurs="unbounded" name="parameter">
+                    		 <xs:complexType>
+                  				  <xs:sequence>
+                    			    <xs:element maxOccurs="1" minOccurs="1" name="paramType" type="xs:string"/>
+                    			    <xs:element maxOccurs="1" minOccurs="1" name="paramName" type="xs:string"/>
+                    			  </xs:sequence>
+                    		</xs:complexType>
+                    	</xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+        </xs:sequence>
+    </xs:complexType>
 
 </xs:schema>
 

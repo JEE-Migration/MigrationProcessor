@@ -22,22 +22,60 @@
 	
 	<relationships>
 		<attribute>
-			<from>A</from>
-			<to>B</to>
+			<from>
+				<qualifiedType>co.uniandes.app.MyClassA</qualifiedType>
+				<sourceMicroservice>A</sourceMicroservice>
+			</from>
+			<to>
+				<qualifiedType>co.uniandes.app.MyClassA</qualifiedType>
+				<targetMicroservice>A</targetMicroservice>
+			</to>
 			<annotations>
 				<annotation>CDI</annotation>
 			</annotations>
 		</attribute>
 		<methodInvocation>
-			<from>B</from>
-			<to>A</to>
-			<methodSignature>public void foo(int a)</methodSignature>
+			<from>
+				<qualifiedType>co.uniandes.app.MyClassB</qualifiedType>
+				<sourceMicroservice>B</sourceMicroservice>
+			</from>
+			<to>
+				<qualifiedType>co.uniandes.app.MyClassC</qualifiedType>
+				<targetMicroservice>C</targetMicroservice>
+			</to>
+			<method>
+				<visibility>public</visibility>
+				<returnType>void</returnType>
+				<methodName>foo</methodName>
+				<parameters>
+					<parameter>
+						<paramType>int</paramType>
+						<paramName>param</paramName>
+					</parameter>
+				</parameters>	
+			</method>
 		</methodInvocation>	
 		
 		<methodParameter>
-			<from>A</from>
-			<to>C</to>
-			<methodSignature>public int bar(MyClassC myObject)</methodSignature>
+			<from>
+				<qualifiedType>co.uniandes.app.MyClassC</qualifiedType>
+				<sourceMicroservice>C</sourceMicroservice>
+			</from>
+			<to>
+				<qualifiedType>co.uniandes.app.MyClassA</qualifiedType>
+				<targetMicroservice>A</targetMicroservice>
+			</to>
+			<method>
+				<visibility>public</visibility>
+				<returnType>void</returnType>
+				<methodName>foo</methodName>
+				<parameters>
+					<parameter>
+						<paramType>int</paramType>
+						<paramName>param</paramName>
+					</parameter>
+				</parameters>	
+			</method>
 		</methodParameter>	
 	</relationships>
 </migration>
