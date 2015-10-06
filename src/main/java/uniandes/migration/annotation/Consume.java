@@ -10,6 +10,10 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Consume {
-    String serviceName() default "";
+    String path() default "";
+    String method() default ""; //Enumeration
+    String injectionName();
+    Class returnValue();
+
 
 }
