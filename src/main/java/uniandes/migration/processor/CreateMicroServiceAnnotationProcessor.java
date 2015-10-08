@@ -4,11 +4,17 @@ import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
+import generated.Attribute;
+import generated.MethodInvocation;
+import generated.MethodParameter;
 import generated.Microservice;
 import generated.Migration;
+import generated.Relation;
+import generated.Relation.From;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,14 +28,23 @@ import java.util.Properties;
 /**
  * Created by carlos on 9/23/15.
  */
-public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtType<?>>{
+public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtElement>{
 
 	public static final String PATH_TO_MODEL_XML = "./src/main/resources/kdmResult.xml";
 	
 	private Migration migrationProp;
 	
 	private Map<String, CtAnnotationType<?>> annotations;
+	
 	private Map<String, Microservice> microservices;
+	
+	private Map<String, Relation> fromAtribute;
+	private Map<String, Relation> fromMethodInvocation;
+	private Map<String, Relation> fromMethodParameter;
+	
+	private Map<String, Relation> toAtribute;
+	private Map<String, Relation> toMethodInvocation;
+	private Map<String, Relation> toMethodParameter;
 	
 	private static Map<String, CtType<?>> requiresMicroserviceAnnotation;
 	
@@ -44,7 +59,15 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtT
         GetAnnotationProcessor.readAnnotations(GetAnnotationProcessor.ANNOTATIONS_PATH);
         annotations =  GetAnnotationProcessor.getAnnotations();
         
-        microservices = getMapFromNameToMicorservice(migrationProp);;
+        microservices = getMapFromNameToMicorservice(migrationProp);
+        
+        fromAtribute = getMapFromNameToFromAtribute(migrationProp);
+        fromMethodInvocation = getMapFromNameToFromMethodInvocation(migrationProp);
+        fromMethodParameter = getMapFromNameToFromMethodParameter(migrationProp);
+        
+        toAtribute = getMapFromNameToToAtribute(migrationProp);
+        toMethodInvocation = getMapFromNameToToMethodInvocation(migrationProp);
+        toMethodParameter = getMapFromNameToToMethodParameter(migrationProp);
         
         props = new Properties();
         try {
@@ -54,13 +77,23 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtT
         }
     }
 
-    public void process(CtType<?> ctType) {    	
-    	String mkey = ctType.getQualifiedName();
+    public void process(CtElement ctElem) {    	
     	
     	//If microservice
-    	if(microservices.containsKey(mkey)){
-    		requiresMicroserviceAnnotation.put(ctType.getQualifiedName(),ctType);
+    	if(ctElem instanceof CtType<?>){
+    		CtType ctType = (CtType)ctElem;
+    		String mkey = ctType.getQualifiedName();
+    		if(microservices.containsKey(mkey)){
+        		requiresMicroserviceAnnotation.put(ctType.getQualifiedName(),ctType);
+        	}
     	}
+    	else if(ctElem instanceof CtMethod){
+    		CtMethod ctMethod = (CtMethod) ctElem;
+    	}
+    	else{
+    		
+    	}
+    	
     	
 //    	for(Object key : props.keySet()){
 //            String stringKey = key.toString();
@@ -130,6 +163,67 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtT
     	}
     	return microservices;
     }
+    
+    public static Map<String, Relation> getMapFromNameToFromAtribute(Migration migrationProp){
+    	Map<String, Relation> fromAtribute = new HashMap<String, Relation>();
+    	for(Relation r: migrationProp.getRelationships().getAttributeOrMethodInvocationOrMethodParameter()){
+    		if(r instanceof Attribute){
+    			fromAtribute.put(r.getFrom().getQualifiedType(), r);
+    		}
+    	}
+    	return fromAtribute;
+    }
+    
+    public static Map<String, Relation> getMapFromNameToFromMethodInvocation(Migration migrationProp){
+    	Map<String, Relation> fromAtribute = new HashMap<String, Relation>();
+    	for(Relation r: migrationProp.getRelationships().getAttributeOrMethodInvocationOrMethodParameter()){
+    		if(r instanceof MethodInvocation){
+    			fromAtribute.put(r.getFrom().getQualifiedType(), r);
+    		}
+    	}
+    	return fromAtribute;
+    }
+    
+    public static Map<String, Relation> getMapFromNameToFromMethodParameter(Migration migrationProp){
+    	Map<String, Relation> fromAtribute = new HashMap<String, Relation>();
+    	for(Relation r: migrationProp.getRelationships().getAttributeOrMethodInvocationOrMethodParameter()){
+    		if(r instanceof MethodParameter){
+    			fromAtribute.put(r.getFrom().getQualifiedType(), r);
+    		}
+    	}
+    	return fromAtribute;
+    }
+    
+    public static Map<String, Relation> getMapFromNameToToAtribute(Migration migrationProp){
+    	Map<String, Relation> fromAtribute = new HashMap<String, Relation>();
+    	for(Relation r: migrationProp.getRelationships().getAttributeOrMethodInvocationOrMethodParameter()){
+    		if(r instanceof Attribute){
+    			fromAtribute.put(r.getTo().getQualifiedType(), r);
+    		}
+    	}
+    	return fromAtribute;
+    }
+    
+    public static Map<String, Relation> getMapFromNameToToMethodInvocation(Migration migrationProp){
+    	Map<String, Relation> fromAtribute = new HashMap<String, Relation>();
+    	for(Relation r: migrationProp.getRelationships().getAttributeOrMethodInvocationOrMethodParameter()){
+    		if(r instanceof MethodInvocation){
+    			fromAtribute.put(r.getTo().getQualifiedType(), r);
+    		}
+    	}
+    	return fromAtribute;
+    }
+    
+    public static Map<String, Relation> getMapFromNameToToMethodParameter(Migration migrationProp){
+    	Map<String, Relation> fromAtribute = new HashMap<String, Relation>();
+    	for(Relation r: migrationProp.getRelationships().getAttributeOrMethodInvocationOrMethodParameter()){
+    		if(r instanceof MethodParameter){
+    			fromAtribute.put(r.getTo().getQualifiedType(), r);
+    		}
+    	}
+    	return fromAtribute;
+    }
+
 
     
 	public static Map<String, CtType<?>> getRequiresMicroserviceAnnotation() {
