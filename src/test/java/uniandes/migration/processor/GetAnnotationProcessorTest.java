@@ -1,9 +1,11 @@
 package uniandes.migration.processor;
 
 import static org.junit.Assert.*;
+import generated.Migration;
 
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import spoon.Launcher;
@@ -13,9 +15,6 @@ public class GetAnnotationProcessorTest {
 
 	private static final String PROCESSOR = "uniandes.migration.processor.GetAnnotationProcessor";
 	private static String TEST_ANNOTATIONS_PATH = "./src/main/java/uniandes/migration/annotation";
-	
-//	private static String TEST_ANNOTATIONS_PATH = "./src/main/java/uniandes/migration/processor";
-	
 	
 	@Test
 	public void test() {
@@ -45,5 +44,7 @@ public class GetAnnotationProcessorTest {
         }
         
 	}
+	
+	
 
 }
