@@ -29,7 +29,7 @@ public class GetAnnotationProcessorTest {
         spoonArgs[5] = "7";
         try {
             Launcher.main(spoonArgs);
-            Map<String, CtAnnotationType<?>> annotations = AnnotationContainer.getAnnotations();
+            Map<String, CtAnnotationType<?>> annotations = GetAnnotationProcessor.getAnnotations();
             assertTrue(annotations.size() == 4);
             assertTrue(annotations.get("uniandes.migration.annotation.Microservice") != null);
             assertTrue(annotations.get("uniandes.migration.annotation.Consumes") != null);

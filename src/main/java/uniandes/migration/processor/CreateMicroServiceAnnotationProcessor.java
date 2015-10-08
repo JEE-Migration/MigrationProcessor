@@ -27,18 +27,22 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtT
 	public static final String PATH_TO_MODEL_XML = "./src/main/resources/kdmResult.xml";
 	
 	private Migration migrationProp;
-	Map<String, CtAnnotationType<?>> annotations;
 	
-	Map<String, Microservice> microservices;
+	private Map<String, CtAnnotationType<?>> annotations;
+	private Map<String, Microservice> microservices;
+	
+	private static Map<String, CtType<?>> requiresMicroserviceAnnotation;
 	
     Properties props;
 
+    
     @Override
     public void init() {
         super.init();
+        requiresMicroserviceAnnotation = new HashMap();
         migrationProp = readProperties(PATH_TO_MODEL_XML);
-        AnnotationContainer.readAnnotations(AnnotationContainer.ANNOTATIONS_PATH);
-        annotations =  AnnotationContainer.getAnnotations();
+        GetAnnotationProcessor.readAnnotations(GetAnnotationProcessor.ANNOTATIONS_PATH);
+        annotations =  GetAnnotationProcessor.getAnnotations();
         
         microservices = getMapFromNameToMicorservice(migrationProp);;
         
@@ -50,15 +54,12 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtT
         }
     }
 
-    public void process(CtType<?> ctType) {
-//        String s = migrationProp.getMicroservices().getMicroservice().get(0).getQualifiedType();
-//        System.out.println(s);
-    	
+    public void process(CtType<?> ctType) {    	
     	String mkey = ctType.getQualifiedName();
     	
     	//If microservice
     	if(microservices.containsKey(mkey)){
-    		annotateWithMicroservice(ctType);
+    		requiresMicroserviceAnnotation.put(ctType.getQualifiedName(),ctType);
     	}
     	
 //    	for(Object key : props.keySet()){
@@ -85,8 +86,7 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtT
 
     private void annotateWithMicroservice(CtType<?> ctType){
     	String mkey = ctType.getQualifiedName();
-    	System.out.println("[INFO] Annotate with microservice:  " + mkey);
-	
+    	
     	//Create annotation
 		CtAnnotationType<?> microserviceType = annotations.get("uniandes.migration.annotation.Microservice");
     	CtTypeReference ctAnnotationType = microserviceType.getReference();
@@ -99,11 +99,17 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtT
         list.addAll(ctType.getReference().getDeclaration().getAnnotations());
         list.add(ctAnnotation);
         ctType.getReference().getDeclaration().setAnnotations(list);
+        
+        System.out.println("[INFO] Annotate with microservice:  " + mkey);
     }
 
     @Override
     public void processingDone() {
         super.processingDone();
+        for(String t: requiresMicroserviceAnnotation.keySet()){
+        	annotateWithMicroservice(requiresMicroserviceAnnotation.get(t));
+        }
+        
     }
     
     //-----------------------------------------
@@ -124,6 +130,18 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtT
     	}
     	return microservices;
     }
+
+    
+	public static Map<String, CtType<?>> getRequiresMicroserviceAnnotation() {
+		return requiresMicroserviceAnnotation;
+	}
+
+	public static void setRequiresMicroserviceAnnotation(
+			Map<String, CtType<?>> requiresMicroserviceAnnotation) {
+		CreateMicroServiceAnnotationProcessor.requiresMicroserviceAnnotation = requiresMicroserviceAnnotation;
+	}
+    
+    
     
     
     
