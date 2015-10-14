@@ -24,7 +24,7 @@ public class Invoker {
     public static void main (String args[]){
         Invoker invoker = new Invoker();
         invoker.parseParameters(args);
-        invoker.invokeSpoon();
+        invoker.invokeSpoon(invoker.processor, invoker.legacyPath);
     }
 
     /**
@@ -50,8 +50,8 @@ public class Invoker {
     /**
      * Invokes a spoon processor individually
      */
-    protected void invokeSpoon() {
-        // Invoke spoon processor for methods
+    public void invokeSpoon(String processor, String legacyPath) {
+    	// Invoke spoon processor for methods
         String[] spoonArgs = new String[6];
         spoonArgs[0] = "-i";
         spoonArgs[1] = legacyPath;

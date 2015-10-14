@@ -12,6 +12,7 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
+import uniandes.migration.invoker.Invoker;
 
 public class GetAnnotationProcessor extends AbstractProcessor<CtAnnotationType<?>>{
 
@@ -55,22 +56,8 @@ public class GetAnnotationProcessor extends AbstractProcessor<CtAnnotationType<?
 	 * Initializes the annotations
 	 */
 	public static void readAnnotations(String annotationPath){
-		// Invoke spoon processor for methods
-        String[] spoonArgs = new String[6];
-        spoonArgs[0] = "-i";
-        spoonArgs[1] = annotationPath;
-        spoonArgs[2] = "-p";
-        spoonArgs[3] = PROCESSOR;
-        spoonArgs[4] = "--compliance";
-        spoonArgs[5] = "7";
-        try {
-            Launcher.main(spoonArgs);
-        } catch (Exception e) {
-            System.err.println("Error while executing spoon launcher "
-                    + e.getMessage());
-            e.printStackTrace();
-            System.exit(1);
-        }
+		Invoker invoker = new Invoker();
+		invoker.invokeSpoon(PROCESSOR, annotationPath);
 	}
 	
 

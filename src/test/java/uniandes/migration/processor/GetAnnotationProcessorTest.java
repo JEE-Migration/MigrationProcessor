@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.reflect.declaration.CtAnnotationType;
+import uniandes.migration.invoker.Invoker;
 
 public class GetAnnotationProcessorTest {
 
@@ -20,29 +21,16 @@ public class GetAnnotationProcessorTest {
 	public void test() {
 		
 		// Invoke spoon processor for methods
-        String[] spoonArgs = new String[6];
-        spoonArgs[0] = "-i";
-        spoonArgs[1] = TEST_ANNOTATIONS_PATH;
-        spoonArgs[2] = "-p";
-        spoonArgs[3] = PROCESSOR;
-        spoonArgs[4] = "--compliance";
-        spoonArgs[5] = "7";
-        try {
-            Launcher.main(spoonArgs);
-            Map<String, CtAnnotationType<?>> annotations = GetAnnotationProcessor.getAnnotations();
-            assertTrue(annotations.size() == 4);
-            assertTrue(annotations.get("uniandes.migration.annotation.Microservice") != null);
-            assertTrue(annotations.get("uniandes.migration.annotation.Consumes") != null);
-            assertTrue(annotations.get("uniandes.migration.annotation.Consume") != null);
-            assertTrue(annotations.get("uniandes.migration.annotation.Provides") != null);
-        } catch (Exception e) {
-            System.err.println("Error while executing spoon launcher "
-                    + e.getMessage());
-            e.printStackTrace();
-            System.exit(1);
-            fail();
-        }
-        
+		Invoker invoker = new Invoker();
+		invoker.invokeSpoon(PROCESSOR, TEST_ANNOTATIONS_PATH);
+		
+		Map<String, CtAnnotationType<?>> annotations = GetAnnotationProcessor.getAnnotations();
+		assertTrue(annotations.size() == 4);
+		assertTrue(annotations.get("uniandes.migration.annotation.Microservice") != null);
+		assertTrue(annotations.get("uniandes.migration.annotation.Consumes") != null);
+		assertTrue(annotations.get("uniandes.migration.annotation.Consume") != null);
+		assertTrue(annotations.get("uniandes.migration.annotation.Provides") != null);
+
 	}
 	
 	

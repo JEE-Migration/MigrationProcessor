@@ -8,6 +8,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
+import util.JaxbWriterReader;
 import generated.Attribute;
 import generated.MethodInvocation;
 import generated.MethodParameter;
