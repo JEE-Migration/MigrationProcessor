@@ -1,5 +1,5 @@
+*Listo ToDo Crear enumeration para tipos de metodos de http usados en Consume (Mauricio)
 *ToDo Crear xml conforme al esquema para representar marketplace (Mauricio)
-*ToDo Crear enumeration para tipos de metodos de http usados en Consume (Mauricio)
 *ToDO Revisar Consumes vs Requires
 
 *Listo Generar codigo para esquema con XJC (Luis)
