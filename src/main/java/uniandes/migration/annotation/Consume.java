@@ -13,7 +13,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Consume {
     String path() default "";
-    HttpMethod method() default HttpMethod.GET;
+
+    HttpMethod method();
     String injectionName();
     Class returnValue();
 
