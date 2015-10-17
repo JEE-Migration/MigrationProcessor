@@ -9,6 +9,7 @@ import generated.Relation.From;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -16,6 +17,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtFieldReference;
 import uniandes.migration.invoker.Invoker;
 
 public class CreateMicroServiceAnnotationProcessorTest {
@@ -48,6 +50,35 @@ public class CreateMicroServiceAnnotationProcessorTest {
 	}
 	
 	@Test
+	public void testFindAtributes() {
+		// Invoke spoon processor for methods
+        
+		Invoker invoker = new Invoker();
+		invoker.invokeSpoon(PROCESSOR, LEGACY_CODE_PATH);
+		
+		Map<String, CtFieldReference<?>> atributesRequiringConsumeAnotation = CreateMicroServiceAnnotationProcessor
+        		.getAtributesRequiringConsumeAnotation();
+        assertTrue(atributesRequiringConsumeAnotation.size() == 1);
+        assertTrue(atributesRequiringConsumeAnotation.containsKey("co.uniandes.app.MyClassA#a"));
+	}
+	
+	@Test
+	public void testReadPropertiesAtributes() {
+		Migration migrationProp;
+        migrationProp = CreateMicroServiceAnnotationProcessor.readProperties(
+        		CreateMicroServiceAnnotationProcessor.PATH_TO_MODEL_XML);
+        
+        Map<String, Set<String>> fromTypeToRelatedAtributeTypes;
+        fromTypeToRelatedAtributeTypes = CreateMicroServiceAnnotationProcessor
+        		.getMapFromTypeToRelatedAtributeTypes(migrationProp);
+        assertTrue(fromTypeToRelatedAtributeTypes.size() == 1);
+        
+        assertTrue(fromTypeToRelatedAtributeTypes.containsKey("co.uniandes.app.MyClassA"));
+        assertTrue(fromTypeToRelatedAtributeTypes.get("co.uniandes.app.MyClassA").
+        		contains("co.uniandes.app.MyClassA"));
+	}
+	
+	@Test
 	public void testReadProperties() {
 		Migration migration = CreateMicroServiceAnnotationProcessor.readProperties(
 				CreateMicroServiceAnnotationProcessor.PATH_TO_MODEL_XML);
@@ -55,7 +86,6 @@ public class CreateMicroServiceAnnotationProcessorTest {
 		
 		Map<String, CtAnnotationType<?>> annotations;
 		Map<String, Microservice> microservices;
-		Map<String, Relation> fromAtribute;
 		Map<String, Relation> fromMethodInvocation;
 		Map<String, Relation> fromMethodParameter;
 		
@@ -85,11 +115,6 @@ public class CreateMicroServiceAnnotationProcessorTest {
         assertTrue(microservices.containsKey("co.uniandes.app.MyClassB"));
         assertTrue(microservices.containsKey("co.uniandes.app.MyClassC"));
         
-        fromAtribute = CreateMicroServiceAnnotationProcessor
-        		.getMapFromNameToFromAtribute(migrationProp);
-        assertTrue(fromAtribute.size() == 1);
-        
-        assertTrue(fromAtribute.containsKey("co.uniandes.app.MyClassA"));
         
         fromMethodInvocation = CreateMicroServiceAnnotationProcessor
         		.getMapFromNameToFromMethodInvocation(migrationProp);

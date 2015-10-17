@@ -4,6 +4,6 @@ import co.uniandes.app.MyClassB;
 
 public class MyClassA {
 	
-	MyClassB b;
+	MyClassA a;
 
 }
