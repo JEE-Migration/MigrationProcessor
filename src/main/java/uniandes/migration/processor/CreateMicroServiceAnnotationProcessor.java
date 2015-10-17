@@ -8,6 +8,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.reflect.declaration.CtFieldImpl;
 import util.JaxbWriterReader;
 import generated.Attribute;
 import generated.MethodInvocation;
@@ -90,6 +91,14 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtE
     	}
     	else if(ctElem instanceof CtMethod){
     		CtMethod ctMethod = (CtMethod) ctElem;
+    	}
+    	else if(ctElem instanceof CtFieldImpl<?>){	
+    		CtFieldImpl ctFieldImpl = (CtFieldImpl) ctElem;
+    		String mkey = ctFieldImpl.getSignature();
+//    		if(fromAtribute.containsKey(mkey)){
+        		System.out.println(mkey);			
+//    		}
+    		
     	}
     	else{
     		
