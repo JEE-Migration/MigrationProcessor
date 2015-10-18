@@ -5,10 +5,13 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.declaration.CtFieldImpl;
+import spoon.support.reflect.declaration.CtMethodImpl;
+import uniandes.migration.enumeration.HttpMethod;
 import util.JaxbWriterReader;
 import generated.Attribute;
 import generated.MethodInvocation;
@@ -17,6 +20,7 @@ import generated.Microservice;
 import generated.Migration;
 import generated.Relation;
 import generated.Relation.From;
+import generated.Signature.Parameters.Parameter;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -42,8 +46,12 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtE
 	
 	private Map<String, Microservice> microservices;
 	
-	Map<String, Set<String>> fromTypeToRelatedAtributeTypes;
-	private Map<String, Relation> fromMethodInvocation;
+	private Map<String, Set<String>> fromTypeToRelatedAtributeTypes;
+	//Class/Type -> methodSignature -> Other atributes
+	private Map<String, Map<String, Map<String, String>>> fromTypeToRelatedMethods;
+	
+	
+
 	private Map<String, Relation> fromMethodParameter;
 	
 	private Map<String, Relation> toAtribute;
@@ -52,7 +60,7 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtE
 	
 	private static Map<String, CtType<?>> requiresMicroserviceAnnotation;
 	private static Map<String,CtFieldReference<?>> atributesRequiringConsumeAnotation;
-	
+	private static Map<String,CtMethod<?>> methodsRequiringConsumeAnotation;
     Properties props;
 
     
@@ -61,6 +69,7 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtE
         super.init();
         requiresMicroserviceAnnotation = new HashMap();
         atributesRequiringConsumeAnotation = new HashMap<String,CtFieldReference<?>>();
+        methodsRequiringConsumeAnotation = new HashMap<String, CtMethod<?>>();
         
         migrationProp = readProperties(PATH_TO_MODEL_XML);
         GetAnnotationProcessor.readAnnotations(GetAnnotationProcessor.ANNOTATIONS_PATH);
@@ -69,7 +78,7 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtE
         microservices = getMapFromNameToMicorservice(migrationProp);
         
         fromTypeToRelatedAtributeTypes = getMapFromTypeToRelatedAtributeTypes(migrationProp);
-        fromMethodInvocation = getMapFromNameToFromMethodInvocation(migrationProp);
+        fromTypeToRelatedMethods = getMapFromTypeToRelatedMethod(migrationProp);
         fromMethodParameter = getMapFromNameToFromMethodParameter(migrationProp);
         
         toAtribute = getMapFromNameToToAtribute(migrationProp);
@@ -85,6 +94,10 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtE
     }
 
    
+
+	
+
+
 
 	public void process(CtElement ctElem) {    	
     	
@@ -105,13 +118,27 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtE
     				}
     			}
     		}
+    		
+    		//If type (class) contains required method
+    		if(fromTypeToRelatedMethods.containsKey(mkey)){
+    			for(Object o: ctType.getAllMethods()){
+    				CtMethod<?> m = (CtMethod)o;
+    				if(fromTypeToRelatedMethods.get(mkey).containsKey(m.getSignature())){
+    					methodsRequiringConsumeAnotation.put(m.getSignature(), m);
+    				}
+    			}
+    		}
+    		
     	}
     	else if(ctElem instanceof CtMethod){
-//    		CtMethod ctMethod = (CtMethod) ctElem;
-//    		String signature = ctElem.getSignature();
-//    		String visibility = ctMethod.getVisibility().name();
-//    		List<String> params = ctMethod.getParameters();
-//    		System.out.println(ctMethod);
+    		CtMethod ctMethod = (CtMethod) ctElem;
+    		String signature = ctElem.getSignature();
+    		String visibility = ctMethod.getVisibility().name();
+    		List<String> params = ctMethod.getParameters();
+    		System.out.println("M:" + ctMethod.getVisibility().toString().toLowerCase() + " " 
+    		+ ctMethod.getSignature());
+    		
+    		
     	}
     	else if(ctElem instanceof CtFieldImpl<?>){	
     		CtFieldImpl ctFieldImpl = (CtFieldImpl) ctElem;
@@ -181,6 +208,11 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtE
         	annotateAtributeWithConsumes(atributesRequiringConsumeAnotation.get(t));
         }
         
+        //Annotate methods
+        for(String t: methodsRequiringConsumeAnotation.keySet()){
+        	annotateMethodWithConsumes(methodsRequiringConsumeAnotation.get(t));
+        }
+        
     }
     
     //-----------------------------------------
@@ -188,7 +220,79 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtE
     //-----------------------------------------
     
     
-    private void annotateAtributeWithConsumes(CtFieldReference<?> ctFieldReference) {
+    private void annotateMethodWithConsumes(CtMethod<?> ctMethod) {
+    	String mkey = ctMethod.getSignature();
+    	
+    	//Create annotation Consumes
+		CtAnnotationType<?> consumes = annotations.get("uniandes.migration.annotation.Consumes");
+    	CtTypeReference ctAnnotationType = consumes.getReference();
+        CtAnnotation<?> ctAnnotation = this.getFactory().Core().createAnnotation();
+        ctAnnotation.setAnnotationType(ctAnnotationType);
+        
+        //Create annotation Consume
+        CtAnnotationType<?> consume = annotations.get("uniandes.migration.annotation.Consume");
+    	CtTypeReference ctAnnotationTypeConsume = consumes.getReference();
+        CtAnnotation<?> ctAnnotationConsume = this.getFactory().Core().createAnnotation();
+        ctAnnotationConsume.setAnnotationType(ctAnnotationTypeConsume);
+        
+        String parent = ((CtType<?>)ctMethod.getParent()).getQualifiedName();
+        Map<String, Map<String, String>> mm = fromTypeToRelatedMethods.get(parent);
+        
+        String toMicroservice = mm.get(mkey).get("toMicroservice");
+        String toType = mm.get(mkey).get("toQualifiedType");
+        
+        ctAnnotationConsume.addValue("microservice", toMicroservice);
+        
+        if(!ctMethod.getType().getSimpleName().equals("void") && methodOnlyHasPrimitiveValues(ctMethod)){
+        	ctAnnotationConsume.addValue("method", HttpMethod.GET);
+        }
+        else{
+        	ctAnnotationConsume.addValue("method", HttpMethod.POST);
+        }
+        
+        
+        
+        CtAnnotation []consumeArray = new CtAnnotation[] {ctAnnotationConsume};
+        ctAnnotation.addValue("value", consumeArray);
+        
+		
+        //Add anotation
+		List<CtAnnotation<? extends Annotation>> list = new ArrayList<CtAnnotation<? extends Annotation>>();
+        list.addAll(ctMethod.getAnnotations());
+        list.add(ctAnnotation);
+        ctMethod.setAnnotations(list);
+        
+        System.out.println("[INFO] Annotate with Consumes:  " + mkey);
+		
+	}
+
+
+    public boolean methodOnlyHasPrimitiveValues(CtMethod ctMethod){
+    	boolean primitive = true;
+    	for(Object o:ctMethod.getParameters()){
+    		CtParameter<?> p = (CtParameter)o;
+    		String signature = p.getType().getQualifiedName();
+    		if(!signature.equals("long") &&
+    		   !signature.equals("int") &&
+    		   !signature.equals("char") &&
+    		   !signature.equals("byte") &&
+    		   !signature.equals("double") &&
+    		   !signature.equals("float") &&
+    		   !signature.equals("String")
+    				)
+    		{
+    			primitive = false;
+    			break;
+    		}
+    	}
+    	return primitive;
+    }
+
+
+
+
+
+	private void annotateAtributeWithConsumes(CtFieldReference<?> ctFieldReference) {
     	String mkey = ctFieldReference.getQualifiedName();
     	
     	//Create annotation Consumes
@@ -254,14 +358,42 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtE
     	return mapAtributes;
     }
     
-    public static Map<String, Relation> getMapFromNameToFromMethodInvocation(Migration migrationProp){
-    	Map<String, Relation> fromAtribute = new HashMap<String, Relation>();
+    public static Map<String, Map<String, Map<String, String>>> getMapFromTypeToRelatedMethod(
+    		Migration migrationProp)
+    {
+    	Map<String, Map<String, Map<String,String>>> mapMethods = new HashMap<String, Map<String, Map<String,String>>>();
     	for(Relation r: migrationProp.getRelationships().getAttributeOrMethodInvocationOrMethodParameter()){
     		if(r instanceof MethodInvocation){
-    			fromAtribute.put(r.getFrom().getQualifiedType(), r);
+    			MethodInvocation method = (MethodInvocation)r;
+    			String fromType = method.getFrom().getQualifiedType();
+    			
+    			StringBuilder sb = new StringBuilder();
+    			for(Parameter p: method.getMethod().getParameters().getParameter()){
+    				sb.append(p.getParamType());
+    				sb.append(",");
+    			}
+    			String params = (sb.length() > 0)? sb.substring(0, sb.length()-1): sb.toString();
+    			
+    			String toType = method.getMethod().getReturnType() + " " 
+    			+ method.getMethod().getMethodName() + 
+    			"(" + params +")";
+    			
+    			Map<String,String> atributes = new HashMap<String, String>();
+				atributes.put("toQualifiedType", method.getTo().getQualifiedType());
+				atributes.put("toMicroservice", method.getTo().getTargetMicroservice());
+    			if(mapMethods.containsKey(fromType)){
+    				mapMethods.get(fromType).put(toType, atributes);
+    			}
+    			else{
+    				Map<String, Map<String, String>> toTypes = 
+    						new HashMap<String, Map<String, String>>();
+    				toTypes.put(toType, atributes);
+    				mapMethods.put(fromType, toTypes);
+    			}
+    			
     		}
     	}
-    	return fromAtribute;
+    	return mapMethods;
     }
     
     public static Map<String, Relation> getMapFromNameToFromMethodParameter(Migration migrationProp){
@@ -324,7 +456,26 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtE
 		CreateMicroServiceAnnotationProcessor.atributesRequiringConsumeAnotation = atributesRequiringConsumeAnotation;
 	}
     
+	
+	public Map<String, Map<String, Map<String, String>>> getFromTypeToRelatedMethods() {
+		return fromTypeToRelatedMethods;
+	}
+
+	public void setFromTypeToRelatedMethods(
+			Map<String, Map<String, Map<String, String>>> fromTypeToRelatedMethods) {
+		this.fromTypeToRelatedMethods = fromTypeToRelatedMethods;
+	}
     
+	public static Map<String, CtMethod<?>> getMethodsRequiringConsumeAnotation() {
+		return methodsRequiringConsumeAnotation;
+	}
+
+
+
+	public static void setMethodsRequiringConsumeAnotation(
+			Map<String, CtMethod<?>> methodsRequiringConsumeAnotation) {
+		CreateMicroServiceAnnotationProcessor.methodsRequiringConsumeAnotation = methodsRequiringConsumeAnotation;
+	}
     
     
 }

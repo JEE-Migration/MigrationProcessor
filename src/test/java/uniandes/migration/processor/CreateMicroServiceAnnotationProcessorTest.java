@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtFieldReference;
 import uniandes.migration.invoker.Invoker;
@@ -63,6 +64,21 @@ public class CreateMicroServiceAnnotationProcessorTest {
 	}
 	
 	@Test
+	public void testFindMethods() {
+		// Invoke spoon processor for methods
+        
+		Invoker invoker = new Invoker();
+		invoker.invokeSpoon(PROCESSOR, LEGACY_CODE_PATH);
+		
+		Map<String, CtMethod<?>> atributesRequiringConsumeAnotation = CreateMicroServiceAnnotationProcessor
+        		.getMethodsRequiringConsumeAnotation();
+        assertTrue(atributesRequiringConsumeAnotation.size() == 1);
+        assertTrue(atributesRequiringConsumeAnotation.containsKey("void foo(int)"));
+	}
+	
+	
+	
+	@Test
 	public void testReadPropertiesAtributes() {
 		Migration migrationProp;
         migrationProp = CreateMicroServiceAnnotationProcessor.readProperties(
@@ -76,6 +92,30 @@ public class CreateMicroServiceAnnotationProcessorTest {
         assertTrue(fromTypeToRelatedAtributeTypes.containsKey("co.uniandes.app.MyClassA"));
         assertTrue(fromTypeToRelatedAtributeTypes.get("co.uniandes.app.MyClassA").
         		contains("co.uniandes.app.MyClassA"));
+        
+
+	}
+	
+	@Test
+	public void testReadPropertiesMethods() {
+		Migration migrationProp;
+        migrationProp = CreateMicroServiceAnnotationProcessor.readProperties(
+        		CreateMicroServiceAnnotationProcessor.PATH_TO_MODEL_XML);
+        
+        Map<String, Map<String, Map<String, String>>> fromTypeToRelatedMethods;
+        fromTypeToRelatedMethods = CreateMicroServiceAnnotationProcessor
+        		.getMapFromTypeToRelatedMethod(migrationProp);
+        assertTrue(fromTypeToRelatedMethods.size() == 1);
+        
+        assertTrue(fromTypeToRelatedMethods.containsKey("co.uniandes.app.MyClassB"));
+        assertTrue(fromTypeToRelatedMethods.get("co.uniandes.app.MyClassB").
+        		containsKey("void foo(int)"));
+        
+        assertTrue(fromTypeToRelatedMethods.get("co.uniandes.app.MyClassB").
+        		get("void foo(int)").get("toQualifiedType").equals("co.uniandes.app.MyClassC"));
+        assertTrue(fromTypeToRelatedMethods.get("co.uniandes.app.MyClassB").
+        		get("void foo(int)").get("toMicroservice").equals("C"));
+	
 	}
 	
 	@Test
@@ -86,7 +126,6 @@ public class CreateMicroServiceAnnotationProcessorTest {
 		
 		Map<String, CtAnnotationType<?>> annotations;
 		Map<String, Microservice> microservices;
-		Map<String, Relation> fromMethodInvocation;
 		Map<String, Relation> fromMethodParameter;
 		
 		Map<String, Relation> toAtribute;
@@ -115,12 +154,6 @@ public class CreateMicroServiceAnnotationProcessorTest {
         assertTrue(microservices.containsKey("co.uniandes.app.MyClassB"));
         assertTrue(microservices.containsKey("co.uniandes.app.MyClassC"));
         
-        
-        fromMethodInvocation = CreateMicroServiceAnnotationProcessor
-        		.getMapFromNameToFromMethodInvocation(migrationProp);
-        assertTrue(fromMethodInvocation.size() == 1);
-        
-        assertTrue(fromMethodInvocation.containsKey("co.uniandes.app.MyClassB"));
         
         fromMethodParameter = CreateMicroServiceAnnotationProcessor
         		.getMapFromNameToFromMethodParameter(migrationProp);
