@@ -22,7 +22,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtFieldReference;
 import uniandes.migration.invoker.Invoker;
-import util.PropertiesMap;
+import uniandes.migration.util.PropertiesMap;
 
 public class CreateMicroServiceAnnotationProcessorTest {
 

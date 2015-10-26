@@ -12,7 +12,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.reflect.declaration.CtMethodImpl;
 import uniandes.migration.enumeration.HttpMethod;
-import util.PropertiesMap;
+import uniandes.migration.util.PropertiesMap;
 import generated.Attribute;
 import generated.MethodInvocation;
 import generated.Microservice;
@@ -143,7 +143,7 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtT
         
         //Create annotation Consume
         CtAnnotationType<?> consume = annotations.get("uniandes.migration.annotation.Consume");
-    	CtTypeReference ctAnnotationTypeConsume = consumes.getReference();
+    	CtTypeReference ctAnnotationTypeConsume = consume.getReference();
         CtAnnotation<?> ctAnnotationConsume = this.getFactory().Core().createAnnotation();
         ctAnnotationConsume.setAnnotationType(ctAnnotationTypeConsume);
         ctAnnotationConsume.addValue("injectionName", ctFieldReference.getSimpleName());
@@ -220,7 +220,7 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtT
     		   !signature.equals("byte") &&
     		   !signature.equals("double") &&
     		   !signature.equals("float") &&
-    		   !signature.equals("String")
+    		   !signature.equals("java.lang.String")
     				)
     		{
     			primitive = false;

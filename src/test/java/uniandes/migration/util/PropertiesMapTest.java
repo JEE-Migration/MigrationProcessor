@@ -1,4 +1,4 @@
-package util;
+package uniandes.migration.util;
 
 import static org.junit.Assert.*;
 import generated.Attribute;
@@ -14,6 +14,7 @@ import org.junit.Test;
 import spoon.reflect.declaration.CtType;
 import uniandes.migration.invoker.Invoker;
 import uniandes.migration.processor.CreateMicroServiceAnnotationProcessor;
+import uniandes.migration.util.PropertiesMap;
 
 public class PropertiesMapTest {
 
