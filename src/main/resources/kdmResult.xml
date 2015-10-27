@@ -43,17 +43,28 @@
 				<qualifiedType>co.uniandes.app.MyClassC</qualifiedType>
 				<targetMicroservice>C</targetMicroservice>
 			</to>
-			<method>
+			<requiringMethod>
 				<visibility>public</visibility>
 				<returnType>void</returnType>
-				<methodName>foo</methodName>
+				<methodName>foo1</methodName>
 				<parameters>
 					<parameter>
 						<paramType>int</paramType>
 						<paramName>param</paramName>
 					</parameter>
 				</parameters>	
-			</method>
+			</requiringMethod>
+			<requiredMethod>
+				<visibility>public</visibility>
+				<returnType>void</returnType>
+				<methodName>bar1</methodName>
+				<parameters>
+					<parameter>
+						<paramType>int</paramType>
+						<paramName>param</paramName>
+					</parameter>
+				</parameters>
+			</requiredMethod>
 		</methodInvocation>	
 		
 		<methodParameter>
@@ -65,17 +76,28 @@
 				<qualifiedType>co.uniandes.app.MyClassA</qualifiedType>
 				<targetMicroservice>A</targetMicroservice>
 			</to>
-			<method>
+			<requiringMethod>
 				<visibility>public</visibility>
 				<returnType>void</returnType>
-				<methodName>foo</methodName>
+				<methodName>foo2</methodName>
 				<parameters>
 					<parameter>
 						<paramType>int</paramType>
 						<paramName>param</paramName>
 					</parameter>
 				</parameters>	
-			</method>
+			</requiringMethod>
+			<requiredMethod>
+				<visibility>public</visibility>
+				<returnType>void</returnType>
+				<methodName>bar2</methodName>
+				<parameters>
+					<parameter>
+						<paramType>int</paramType>
+						<paramName>param</paramName>
+					</parameter>
+				</parameters>
+			</requiredMethod>
 		</methodParameter>	
 	</relationships>
 </migration>

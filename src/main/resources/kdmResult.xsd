@@ -60,7 +60,8 @@
             <xs:complexContent>
                 <xs:extension base="relation">
                     <xs:sequence>
-                        <xs:element  minOccurs="0" maxOccurs="1" name="method" type="signature"/>
+                        <xs:element  minOccurs="0" maxOccurs="1" name="requiringMethod" type="signature"/>
+                        <xs:element  minOccurs="0" maxOccurs="1" name="requiredMethod" type="signature"/>
                     </xs:sequence>
                 </xs:extension>
             </xs:complexContent>
@@ -72,7 +73,8 @@
             <xs:complexContent>
                 <xs:extension base="relation">
                     <xs:sequence>
-                        <xs:element  minOccurs="0" maxOccurs="1" name="method" type="signature"/>
+                        <xs:element  minOccurs="0" maxOccurs="1" name="requiringMethod" type="signature"/>
+                        <xs:element  minOccurs="0" maxOccurs="1" name="requiredMethod" type="signature"/>
                     </xs:sequence>
                 </xs:extension>
             </xs:complexContent>
@@ -85,7 +87,7 @@
                     <xs:complexType>
                         <xs:sequence>
                             <xs:element name="qualifiedType" type="xs:string"/>
-                            <xs:element name="sourceMicroservice" type="xs:string"/>
+                            <xs:element name="sourceMicroservice" type="xs:string" minOccurs="0"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
