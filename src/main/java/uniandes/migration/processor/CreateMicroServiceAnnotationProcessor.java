@@ -13,12 +13,7 @@ import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.reflect.declaration.CtMethodImpl;
 import uniandes.migration.enumeration.HttpMethod;
 import uniandes.migration.util.PropertiesMap;
-import generated.Attribute;
-import generated.MethodInvocation;
-import generated.Microservice;
-import generated.Migration;
-import generated.Relation;
-import generated.Relation.From;
+import uniandes.migration.generated.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -175,7 +170,7 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtT
         
         //Create annotation Consume
         CtAnnotationType<?> consume = annotations.get("uniandes.migration.annotation.Consume");
-    	CtTypeReference ctAnnotationTypeConsume = consumes.getReference();
+    	CtTypeReference ctAnnotationTypeConsume = consume.getReference();
         CtAnnotation<?> ctAnnotationConsume = this.getFactory().Core().createAnnotation();
         ctAnnotationConsume.setAnnotationType(ctAnnotationTypeConsume);
         

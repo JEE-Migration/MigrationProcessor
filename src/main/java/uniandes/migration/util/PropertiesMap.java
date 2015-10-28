@@ -5,13 +5,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import generated.Attribute;
-import generated.MethodInvocation;
-import generated.MethodParameter;
-import generated.Microservice;
-import generated.Migration;
-import generated.Relation;
-import generated.Signature.Parameters.Parameter;
+import uniandes.migration.generated.*;
+import uniandes.migration.generated.Signature.Parameters.Parameter;
 
 public class PropertiesMap {
 
@@ -125,14 +120,14 @@ public class PropertiesMap {
 				String fromType = method.getFrom().getQualifiedType();
 				
 				StringBuilder sb = new StringBuilder();
-				for(Parameter p: method.getMethod().getParameters().getParameter()){
+				for(Parameter p: method.getRequiringMethod().getParameters().getParameter()){
 					sb.append(p.getParamType());
 					sb.append(",");
 				}
 				String params = (sb.length() > 0)? sb.substring(0, sb.length()-1): sb.toString();
 				
-				String toMethodSignature = method.getMethod().getReturnType() + " " 
-				+ method.getMethod().getMethodName() + 
+				String toMethodSignature = method.getRequiringMethod().getReturnType() + " " 
+				+ method.getRequiringMethod().getMethodName() + 
 				"(" + params +")";
 				
 				Map<String,String> atributes = new HashMap<String, String>();
@@ -161,14 +156,14 @@ public class PropertiesMap {
 				String fromType = method.getFrom().getQualifiedType();
 				
 				StringBuilder sb = new StringBuilder();
-				for(Parameter p: method.getMethod().getParameters().getParameter()){
+				for(Parameter p: method.getRequiringMethod().getParameters().getParameter()){
 					sb.append(p.getParamType());
 					sb.append(",");
 				}
 				String params = (sb.length() > 0)? sb.substring(0, sb.length()-1): sb.toString();
 				
-				String toMethodSignature = method.getMethod().getReturnType() + " " 
-				+ method.getMethod().getMethodName() + 
+				String toMethodSignature = method.getRequiringMethod().getReturnType() + " " 
+				+ method.getRequiringMethod().getMethodName() + 
 				"(" + params +")";
 				
 				Map<String,String> atributes = new HashMap<String, String>();

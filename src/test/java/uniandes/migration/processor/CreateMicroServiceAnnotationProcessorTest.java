@@ -1,12 +1,7 @@
 package uniandes.migration.processor;
 
 import static org.junit.Assert.*;
-import generated.Attribute;
-import generated.MethodInvocation;
-import generated.Microservice;
-import generated.Migration;
-import generated.Relation;
-import generated.Relation.From;
+import uniandes.migration.generated.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -76,7 +71,7 @@ public class CreateMicroServiceAnnotationProcessorTest {
 		Map<String, CtMethod<?>> atributesRequiringConsumeAnotation = CreateMicroServiceAnnotationProcessor
         		.getMethodsRequiringConsumeAnotation();
         assertTrue(atributesRequiringConsumeAnotation.size() == 1);
-        assertTrue(atributesRequiringConsumeAnotation.containsKey("void foo(int)"));
+        assertTrue(atributesRequiringConsumeAnotation.containsKey("void foo1(int)"));
 	}
 
 }

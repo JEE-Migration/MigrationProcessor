@@ -1,10 +1,7 @@
 package uniandes.migration.util;
 
 import static org.junit.Assert.*;
-import generated.Attribute;
-import generated.MethodInvocation;
-import generated.Microservice;
-import generated.Migration;
+import uniandes.migration.generated.*;
 
 import java.util.Map;
 
@@ -79,12 +76,12 @@ public class PropertiesMapTest {
         
         assertTrue(propertiesMap.fromTypeToRelatedMethods.containsKey("co.uniandes.app.MyClassB"));
         assertTrue(propertiesMap.fromTypeToRelatedMethods.get("co.uniandes.app.MyClassB").
-        		containsKey("void foo(int)"));
+        		containsKey("void foo1(int)"));
         
         //Test related methods
         assertTrue(propertiesMap.serchingForTypeForMethod("co.uniandes.app.MyClassB"));
-        assertTrue(propertiesMap.serchingForMethodForMethod("co.uniandes.app.MyClassB", "void foo(int)"));
-        assertTrue(propertiesMap.getMethodsMicroserviceName("co.uniandes.app.MyClassB", "void foo(int)").equals("C"));   
+        assertTrue(propertiesMap.serchingForMethodForMethod("co.uniandes.app.MyClassB", "void foo1(int)"));
+        assertTrue(propertiesMap.getMethodsMicroserviceName("co.uniandes.app.MyClassB", "void foo1(int)").equals("C"));   
 	}
 	
 	@Test
@@ -94,7 +91,7 @@ public class PropertiesMapTest {
         
         assertTrue(propertiesMap.fromTypeToRelatedMethodParameters.containsKey("co.uniandes.app.MyClassC"));
         assertTrue(propertiesMap.fromTypeToRelatedMethodParameters.get("co.uniandes.app.MyClassC").
-        		containsKey("void foo(int)"));
+        		containsKey("void foo2(int)"));
         
         //Test related methods
        

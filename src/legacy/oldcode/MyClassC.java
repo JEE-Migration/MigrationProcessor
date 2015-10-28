@@ -1,7 +1,7 @@
 package co.uniandes.app;
 public class MyClassC {
 	
-	public void foo(int param){
+	public void bar1(int param){
 		
 	}
 
