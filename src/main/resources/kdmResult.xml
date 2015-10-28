@@ -38,66 +38,70 @@
 			<from>
 				<qualifiedType>co.uniandes.app.MyClassB</qualifiedType>
 				<sourceMicroservice>B</sourceMicroservice>
+				<fromMethod>
+					<visibility>public</visibility>
+					<returnType>void</returnType>
+					<methodName>foo1</methodName>
+					<parameters>
+						<parameter>
+							<paramType>int</paramType>
+							<paramName>param</paramName>
+						</parameter>
+					</parameters>
+				</fromMethod>
 			</from>
 			<to>
 				<qualifiedType>co.uniandes.app.MyClassC</qualifiedType>
 				<targetMicroservice>C</targetMicroservice>
+				<toMethod>
+					<visibility>public</visibility>
+					<returnType>void</returnType>
+					<methodName>bar1</methodName>
+					<parameters>
+						<parameter>
+							<paramType>int</paramType>
+							<paramName>param</paramName>
+						</parameter>
+					</parameters>
+				</toMethod>
 			</to>
-			<requiringMethod>
-				<visibility>public</visibility>
-				<returnType>void</returnType>
-				<methodName>foo1</methodName>
-				<parameters>
-					<parameter>
-						<paramType>int</paramType>
-						<paramName>param</paramName>
-					</parameter>
-				</parameters>	
-			</requiringMethod>
-			<requiredMethod>
-				<visibility>public</visibility>
-				<returnType>void</returnType>
-				<methodName>bar1</methodName>
-				<parameters>
-					<parameter>
-						<paramType>int</paramType>
-						<paramName>param</paramName>
-					</parameter>
-				</parameters>
-			</requiredMethod>
+
+
 		</methodInvocation>	
 		
 		<methodParameter>
 			<from>
 				<qualifiedType>co.uniandes.app.MyClassC</qualifiedType>
 				<sourceMicroservice>C</sourceMicroservice>
+				<fromMethod>
+					<visibility>public</visibility>
+					<returnType>void</returnType>
+					<methodName>foo2</methodName>
+					<parameters>
+						<parameter>
+							<paramType>int</paramType>
+							<paramName>param</paramName>
+						</parameter>
+					</parameters>
+				</fromMethod>
 			</from>
 			<to>
 				<qualifiedType>co.uniandes.app.MyClassA</qualifiedType>
 				<targetMicroservice>A</targetMicroservice>
+				<toMethod>
+					<visibility>public</visibility>
+					<returnType>void</returnType>
+					<methodName>bar2</methodName>
+					<parameters>
+						<parameter>
+							<paramType>int</paramType>
+							<paramName>param</paramName>
+						</parameter>
+					</parameters>
+				</toMethod>
 			</to>
-			<requiringMethod>
-				<visibility>public</visibility>
-				<returnType>void</returnType>
-				<methodName>foo2</methodName>
-				<parameters>
-					<parameter>
-						<paramType>int</paramType>
-						<paramName>param</paramName>
-					</parameter>
-				</parameters>	
-			</requiringMethod>
-			<requiredMethod>
-				<visibility>public</visibility>
-				<returnType>void</returnType>
-				<methodName>bar2</methodName>
-				<parameters>
-					<parameter>
-						<paramType>int</paramType>
-						<paramName>param</paramName>
-					</parameter>
-				</parameters>
-			</requiredMethod>
+
+
 		</methodParameter>	
 	</relationships>
 </migration>
