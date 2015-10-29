@@ -1,7 +1,7 @@
 package uniandes.migration.util;
 
 import static org.junit.Assert.*;
-import uniandes.migration.generated.*;
+import uniandes.migration.microservices.*;
 
 import java.util.Map;
 
@@ -9,6 +9,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import spoon.reflect.declaration.CtType;
+import uniandes.migration.enumeration.HttpMethod;
 import uniandes.migration.invoker.Invoker;
 import uniandes.migration.processor.CreateMicroServiceAnnotationProcessor;
 import uniandes.migration.util.PropertiesMap;
@@ -23,79 +24,73 @@ public class PropertiesMapTest {
 	}
 	
 	@Test
-	public void testReadMicroservices(){
-		Map<String, Microservice> microservices;
+	public void testSearchingForMicroserviceType(){
 		
-		microservices = propertiesMap.microservices;
-        
-        assertTrue(microservices.size() == 9);
-        assertTrue(microservices.containsKey("co.uniandes.app.MyTypeA"));
-        assertTrue(microservices.containsKey("co.uniandes.app.MyTypeB"));
-        assertTrue(microservices.containsKey("co.uniandes.app.MyTypeC"));
-        
-        assertTrue(microservices.containsKey("co.uniandes.app.MyInterfaceA"));
-        assertTrue(microservices.containsKey("co.uniandes.app.MyInterfaceB"));
-        assertTrue(microservices.containsKey("co.uniandes.app.MyInterfaceC"));
-        
-        assertTrue(microservices.containsKey("co.uniandes.app.MyClassA"));
-        assertTrue(microservices.containsKey("co.uniandes.app.MyClassB"));
-        assertTrue(microservices.containsKey("co.uniandes.app.MyClassC"));
-        
-        //Test related methods
-        
-        assertTrue(propertiesMap.serchingForTypeForMicroservice("co.uniandes.app.MyTypeA"));
-        assertTrue(propertiesMap.serchingForTypeForMicroservice("co.uniandes.app.MyTypeB"));
-        assertTrue(propertiesMap.serchingForTypeForMicroservice("co.uniandes.app.MyTypeC"));
-        
-        assertTrue(propertiesMap.getTypesMicroserviceName("co.uniandes.app.MyTypeA").equals("A"));
-        assertTrue(propertiesMap.getTypesMicroserviceName("co.uniandes.app.MyTypeB").equals("B"));
-        assertTrue(propertiesMap.getTypesMicroserviceName("co.uniandes.app.MyTypeC").equals("C"));
-	}
-	
-	
-	@Test
-	public void testReadPropertiesAtributes() {
+		assertFalse(propertiesMap.searchingForMicroserviceType("co.uniandes.app.MyClassD"));
 		
-        assertTrue(propertiesMap.fromTypeToRelatedAtributeTypes.size() == 1);
+        assertTrue(propertiesMap.microservices.size() == 9);
+        assertTrue(propertiesMap.searchingForMicroserviceType("co.uniandes.app.MyTypeA"));
+        assertTrue(propertiesMap.searchingForMicroserviceType("co.uniandes.app.MyTypeB"));
+        assertTrue(propertiesMap.searchingForMicroserviceType("co.uniandes.app.MyTypeC"));
         
-        assertTrue(propertiesMap.fromTypeToRelatedAtributeTypes.containsKey("co.uniandes.app.MyClassA"));
-        assertTrue(propertiesMap.fromTypeToRelatedAtributeTypes.get("co.uniandes.app.MyClassA").
-        		containsKey("co.uniandes.app.MyClassA"));
+        assertTrue(propertiesMap.searchingForMicroserviceType("co.uniandes.app.MyInterfaceA"));
+        assertTrue(propertiesMap.searchingForMicroserviceType("co.uniandes.app.MyInterfaceB"));
+        assertTrue(propertiesMap.searchingForMicroserviceType("co.uniandes.app.MyInterfaceC"));
         
-        //Test related methods
-        assertTrue(propertiesMap.serchingForTypeForAtribute("co.uniandes.app.MyClassA") == true);
-        assertTrue(propertiesMap.serchingForFieldForAtribute("co.uniandes.app.MyClassA", "co.uniandes.app.MyClassA") == true);
+        assertTrue(propertiesMap.searchingForMicroserviceType("co.uniandes.app.MyClassA"));
+        assertTrue(propertiesMap.searchingForMicroserviceType("co.uniandes.app.MyClassB"));
+        assertTrue(propertiesMap.searchingForMicroserviceType("co.uniandes.app.MyClassC"));
         
+        //Return
+        assertTrue(propertiesMap.getTypesMicroservice("co.uniandes.app.MyTypeA").equals("A"));
+        assertTrue(propertiesMap.getTypesMicroservice("co.uniandes.app.MyTypeB").equals("B"));
+        assertTrue(propertiesMap.getTypesMicroservice("co.uniandes.app.MyTypeC").equals("C"));
+        
+        assertTrue(propertiesMap.getTypesMicroservice("co.uniandes.app.MyInterfaceA").equals("A"));
+        assertTrue(propertiesMap.getTypesMicroservice("co.uniandes.app.MyInterfaceB").equals("B"));
+        assertTrue(propertiesMap.getTypesMicroservice("co.uniandes.app.MyInterfaceC").equals("C"));
+        
+        assertTrue(propertiesMap.getTypesMicroservice("co.uniandes.app.MyClassA").equals("A"));
+        assertTrue(propertiesMap.getTypesMicroservice("co.uniandes.app.MyClassB").equals("B"));
+        assertTrue(propertiesMap.getTypesMicroservice("co.uniandes.app.MyClassC").equals("C"));
         
 	}
 	
 	@Test
-	public void testReadPropertiesMethods() {
+	public void testSearchingForTypeForMIFromMethod() {
+		assertFalse(propertiesMap.searchingForTypeForMIFromMethod("co.uniandes.app.MyClassD"));
+		assertTrue(propertiesMap.searchingForTypeForMIFromMethod("co.uniandes.app.MyClassB"));
+	}
+	
+	
+	@Test
+	public void testSearchingForMIFromMethod() {
 		
-        assertTrue(propertiesMap.fromTypeToRelatedMethods.size() == 1);
-        
-        assertTrue(propertiesMap.fromTypeToRelatedMethods.containsKey("co.uniandes.app.MyClassB"));
-        assertTrue(propertiesMap.fromTypeToRelatedMethods.get("co.uniandes.app.MyClassB").
-        		containsKey("void foo1(int)"));
-        
-        //Test related methods
-        assertTrue(propertiesMap.serchingForTypeForMethod("co.uniandes.app.MyClassB"));
-        assertTrue(propertiesMap.serchingForMethodForMethod("co.uniandes.app.MyClassB", "void foo1(int)"));
-        assertTrue(propertiesMap.getMethodsMicroserviceName("co.uniandes.app.MyClassB", "void foo1(int)").equals("C"));   
+		assertFalse(propertiesMap.searchingForMIFromMethod("co.uniandes.app.MyClassD", "int foo(int)"));
+		assertFalse(propertiesMap.searchingForMIFromMethod("co.uniandes.app.MyClassB", "void foo2(int)"));
+		
+		assertTrue(propertiesMap.mapFromMethodToData.size() == 1);
+		assertTrue(propertiesMap.searchingForMIFromMethod("co.uniandes.app.MyClassB", "void foo1(int)"));
+		 
+	}
+
+	
+	@Test
+	public void testSearchingForTypeForMIToMethod() {
+		assertFalse(propertiesMap.searchingForTypeForMIToMethod("co.uniandes.app.MyClassB"));
+		assertTrue(propertiesMap.searchingForTypeForMIToMethod("co.uniandes.app.MyClassC"));
 	}
 	
 	@Test
-	public void testReadPropertiesMethodParameters() {
+	public void testSearchingForMIToMethod() {
+		assertFalse(propertiesMap.searchingForMIToMethod("co.uniandes.app.MyClassD", "int foo(int)"));
+		assertFalse(propertiesMap.searchingForMIToMethod("co.uniandes.app.MyClassC", "void bar(double)"));
 		
-        assertTrue(propertiesMap.fromTypeToRelatedMethodParameters.size() == 1);
-        
-        assertTrue(propertiesMap.fromTypeToRelatedMethodParameters.containsKey("co.uniandes.app.MyClassC"));
-        assertTrue(propertiesMap.fromTypeToRelatedMethodParameters.get("co.uniandes.app.MyClassC").
-        		containsKey("void foo2(int)"));
-        
-        //Test related methods
-       
-        
+		assertTrue(propertiesMap.mapFromMethodToData.size() == 1);
+		assertTrue(propertiesMap.searchingForMIToMethod("co.uniandes.app.MyClassC", "void bar1(int)"));
 	}
+	
+	
+	
 
 }

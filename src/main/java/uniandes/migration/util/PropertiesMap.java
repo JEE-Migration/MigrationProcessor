@@ -1,85 +1,113 @@
 package uniandes.migration.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import uniandes.migration.generated.*;
-import uniandes.migration.generated.Signature.Parameters.Parameter;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
+import uniandes.migration.enumeration.HttpMethod;
+import uniandes.migration.microservices.*;
+import uniandes.migration.microservices.Signature.Parameters.Parameter;
 
-public class PropertiesMap {
+public class PropertiesMap implements IPropertiesMap{
 
 	public final String pathToXmlModel;
 	public final Migration migrationProp;
 	
-	//---------
 	public final Map<String, Microservice> microservices;
-	public final Map<String, Map<String, Attribute>> fromTypeToRelatedAtributeTypes;
-	public final Map<String, Map<String, MethodInvocation>> fromTypeToRelatedMethods;
-	public final Map<String, Map<String, MethodParameter>> fromTypeToRelatedMethodParameters;
+	public final Map<MethodKey, Set<MethodKey>> mapMethodToMethod;
+	
+	public final Map<String, Set<MethodKey>> mapFromTypeToFromMethod;
+	public final Map<MethodKey, List<MethodInvocation>> mapFromMethodToData;
+	
+	public final Map<String, Set<MethodKey>> mapToTypeToToMethod;
+	public final Map<MethodKey, List<MethodInvocation>> mapToMethodToData;
+	
 	
 	public PropertiesMap(String pathToXmlModel){
 		this.pathToXmlModel = pathToXmlModel;
 		migrationProp = readProperties(this.pathToXmlModel);
-		microservices = getMapFromNameToMicorservice(migrationProp);
-		fromTypeToRelatedAtributeTypes = getMapFromTypeToRelatedAtributeTypes(migrationProp);
-		fromTypeToRelatedMethods = getMapFromTypeToRelatedMethod(migrationProp);
-		fromTypeToRelatedMethodParameters = getMapFromTypeToRelatedMethodParameter(migrationProp);
+		microservices = getMapFromTypeNameToMicorservice(migrationProp);
+		mapMethodToMethod = getMapMethodToMethod(migrationProp);
+		
+		
+		mapFromMethodToData = getMapFromMethodToData(migrationProp);
+		mapFromTypeToFromMethod = getMapFromTypeToMethod(mapFromMethodToData.keySet());
+		
+		mapToMethodToData = getMapToMethodToData(migrationProp);
+		mapToTypeToToMethod = getMapFromTypeToMethod(mapToMethodToData.keySet());
+	}
+	
+	
+
+	
+
+
+
+	//-------
+	public boolean searchingForMicroserviceType(String type) {
+		return microservices.containsKey(type);
+	}
+	
+	public String getTypesMicroservice(String type) {
+		return (microservices.containsKey(type))? microservices.get(type).getName(): null;
 	}
 
-	public boolean serchingForTypeForMicroservice(String typeQualifiedName){
-		return (microservices.containsKey(typeQualifiedName))? true: false;
+	public boolean searchingForTypeForMIFromMethod(String type) {
+		return mapFromTypeToFromMethod.containsKey(type);
 	}
-	
-	public String getTypesMicroserviceName(String typeQualifiedName){
-		return microservices.get(typeQualifiedName).getName();
+
+	public boolean searchingForMIFromMethod(String type, String methodSignature) {
+		return mapMethodToMethod.containsKey(new MethodKey(type, methodSignature));
 	}
-	
-	public boolean serchingForTypeForAtribute(String typeQualifiedName){
-		return (fromTypeToRelatedAtributeTypes.containsKey(typeQualifiedName))? true: false;
+
+	public boolean searchingForTypeForMIToMethod(String type) {
+		return mapToTypeToToMethod.containsKey(type);
 	}
-	
-	public boolean serchingForFieldForAtribute(String typeQualifiedName, String atributeTypeQualifiedName){
-		return (fromTypeToRelatedAtributeTypes.get(typeQualifiedName)
-				.containsKey(atributeTypeQualifiedName))? true: false;
+
+	public boolean searchingForMIToMethod(String type, String methodSignature) {
+		return mapToMethodToData.containsKey(new MethodKey(type, methodSignature));
 	}
-	
-	
-	public boolean serchingForTypeForMethod(String typeQualifiedName){
-		return (fromTypeToRelatedMethods.containsKey(typeQualifiedName))? true: false;
+
+	public Set<MethodKey> getToMethods(MethodKey fromMethod){
+		return (mapMethodToMethod.containsKey(fromMethod))?mapMethodToMethod.get(fromMethod):null;
 	}
-	
-	public boolean serchingForMethodForMethod(String typeQualifiedName, String methodSignature){
-		return (fromTypeToRelatedMethods.get(typeQualifiedName)
-				.containsKey(methodSignature))? true: false;
+
+	public String getMicroservice(String type, String methodSignature) {
+		// TODO Auto-generated method stub
+		return null;
 	}
+
+//	public MethodData getMethodProvidesData(String type, String methodSignature) {
+//		String microservice = (microservices.containsKey(type))?microservices.get(type).getName(): null;
+//		if(microservice == null){
+//			return null;
+//		}
+//		
+//		HttpMethod httpMethod  = calculateHttpMethod(methodSignature);
+//		String [] parameterTypes = calculateParameterTypes();
+//		Class returnType = null;
+//		
+//		return new MethodData(microservice, httpMethod, parameterTypes, returnType);
+//	}
 	
-	public String getMethodsMicroserviceName(String typeQualifiedName, String methodSignature){
-		return fromTypeToRelatedMethods.get(typeQualifiedName).get(methodSignature).getTo().getTargetMicroservice();
-	}
 	
+	
+
 	
 	//-----------------------------------------
     //HELPERS
     //-----------------------------------------
-	
-	
-	public static Map<String, Relation> getMapFromNameToToMethodParameter(Migration migrationProp){
-		Map<String, Relation> fromAtribute = new HashMap<String, Relation>();
-		for(Relation r: migrationProp.getRelationships().getAttributeOrMethodInvocationOrMethodParameter()){
-			if(r instanceof MethodParameter){
-				fromAtribute.put(r.getTo().getQualifiedType(), r);
-			}
-		}
-		return fromAtribute;
-	}
 
 	public static Migration readProperties(String path) {
 		return (Migration)JaxbWriterReader.jaxbReader(Migration.class, path);
 	}
 
-	public static Map<String, Microservice> getMapFromNameToMicorservice(Migration migrationProp){
+	public static Map<String, Microservice> getMapFromTypeNameToMicorservice(Migration migrationProp){
 		Map<String, Microservice> microservices = new HashMap<String, Microservice>();
 		for(Microservice m: migrationProp.getMicroservices().getMicroservice()){
 			for(String type: m.getQualifiedType()){
@@ -89,101 +117,119 @@ public class PropertiesMap {
 		return microservices;
 	}
 
-	public static Map<String, Map<String, Attribute>> getMapFromTypeToRelatedAtributeTypes(Migration migrationProp){
-		Map<String, Map<String, Attribute>> mapAtributes= new HashMap<String, Map<String, Attribute>>();
-		
-		for(Relation r: migrationProp.getRelationships().getAttributeOrMethodInvocationOrMethodParameter()){
-			if(r instanceof Attribute){
-				Attribute attribute = (Attribute)r;
-				String fromType = r.getFrom().getQualifiedType();
-				String toType = r.getTo().getQualifiedType();
-				if(mapAtributes.containsKey(fromType)){
-					mapAtributes.get(fromType).put(fromType, attribute);
-				}
-				else{
-					HashMap<String, Attribute> map = new HashMap<String, Attribute>();
-					map.put(toType, attribute);
-					mapAtributes.put(fromType, map);
-				}
-			}
-		}
-		return mapAtributes;
-	}
-
-	public static Map<String, Map<String, MethodInvocation>> getMapFromTypeToRelatedMethod(
-			Migration migrationProp)
+	
+	public static Map<MethodKey, Set<MethodKey>> getMapMethodToMethod(Migration migrationProp)
 	{
-		Map<String, Map<String, MethodInvocation>> mapMethods = new HashMap<String, Map<String, MethodInvocation>>();
-		for(Relation r: migrationProp.getRelationships().getAttributeOrMethodInvocationOrMethodParameter()){
-			if(r instanceof MethodInvocation){
-				MethodInvocation method = (MethodInvocation)r;
+		Map<MethodKey, Set<MethodKey>> methodMap = new HashMap<MethodKey, Set<MethodKey>>();
+		for(Object o: migrationProp.getRelationships().getAttributeOrMethodInvocationOrMethodParameter()){
+			if(o instanceof MethodInvocation){
+				MethodInvocation method = (MethodInvocation)o;
+				
 				String fromType = method.getFrom().getQualifiedType();
+				String fromMethodSignature = getMethodSignature(method.getFrom().getFromMethod());
 				
-				StringBuilder sb = new StringBuilder();
-				for(Parameter p: method.getRequiringMethod().getParameters().getParameter()){
-					sb.append(p.getParamType());
-					sb.append(",");
+				MethodKey fromMethod = new MethodKey(fromType, fromMethodSignature);
+				
+				String toType = method.getTo().getQualifiedType();
+				String toMethodSignature = getMethodSignature(method.getTo().getToMethod());
+				
+				MethodKey toMethod = new MethodKey(toType, toMethodSignature);
+				
+				if(!methodMap.containsKey(fromMethod)){
+					Set<MethodKey> toMethods = new HashSet<MethodKey>();
+					methodMap.put(fromMethod, toMethods);
 				}
-				String params = (sb.length() > 0)? sb.substring(0, sb.length()-1): sb.toString();
-				
-				String toMethodSignature = method.getRequiringMethod().getReturnType() + " " 
-				+ method.getRequiringMethod().getMethodName() + 
-				"(" + params +")";
-				
-				Map<String,String> atributes = new HashMap<String, String>();
-				atributes.put("toQualifiedType", method.getTo().getQualifiedType());
-				atributes.put("toMicroservice", method.getTo().getTargetMicroservice());
-				if(mapMethods.containsKey(fromType)){
-					mapMethods.get(fromType).put(toMethodSignature, method);
-				}
-				else{
-					Map<String, MethodInvocation> mapToMethod = 
-							new HashMap<String, MethodInvocation>();
-					mapToMethod.put(toMethodSignature, method);
-					mapMethods.put(fromType, mapToMethod);
-				}
-				
+				methodMap.get(fromMethod).add(toMethod);
 			}
 		}
-		return mapMethods;
-	}
-
-	public static Map<String, Map<String, MethodParameter>> getMapFromTypeToRelatedMethodParameter(Migration migrationProp){
-		Map<String, Map<String, MethodParameter>> mapMethods = new HashMap<String, Map<String, MethodParameter>>();
-		for(Relation r: migrationProp.getRelationships().getAttributeOrMethodInvocationOrMethodParameter()){
-			if(r instanceof MethodParameter){
-				MethodParameter method = (MethodParameter)r;
-				String fromType = method.getFrom().getQualifiedType();
-				
-				StringBuilder sb = new StringBuilder();
-				for(Parameter p: method.getRequiringMethod().getParameters().getParameter()){
-					sb.append(p.getParamType());
-					sb.append(",");
-				}
-				String params = (sb.length() > 0)? sb.substring(0, sb.length()-1): sb.toString();
-				
-				String toMethodSignature = method.getRequiringMethod().getReturnType() + " " 
-				+ method.getRequiringMethod().getMethodName() + 
-				"(" + params +")";
-				
-				Map<String,String> atributes = new HashMap<String, String>();
-				atributes.put("toQualifiedType", method.getTo().getQualifiedType());
-				atributes.put("toMicroservice", method.getTo().getTargetMicroservice());
-				if(mapMethods.containsKey(fromType)){
-					mapMethods.get(fromType).put(toMethodSignature, method);
-				}
-				else{
-					Map<String, MethodParameter> mapToMethod = 
-							new HashMap<String, MethodParameter>();
-					mapToMethod.put(toMethodSignature, method);
-					mapMethods.put(fromType, mapToMethod);
-				}
-				
-			}
-		}
-		return mapMethods;
+		return methodMap;
 	}
 	
+	public static Map<MethodKey, List<MethodInvocation>> getMapFromMethodToData(Migration migrationProp){
+		Map<MethodKey, List<MethodInvocation>> methodMap = new HashMap<MethodKey, List<MethodInvocation>>();
+		for(Object o: migrationProp.getRelationships().getAttributeOrMethodInvocationOrMethodParameter()){
+			if(o instanceof MethodInvocation){
+				MethodInvocation method = (MethodInvocation)o;
+				
+				String fromType = method.getFrom().getQualifiedType();
+				String fromMethodSignature = getMethodSignature(method.getFrom().getFromMethod());
+				
+				MethodKey fromMethod = new MethodKey(fromType, fromMethodSignature);
+				
+				if(!methodMap.containsKey(fromMethod)){
+					List<MethodInvocation> toSet = new ArrayList<MethodInvocation>();
+					methodMap.put(fromMethod, toSet);
+				}
+				methodMap.get(fromMethod).add(method);
+			}
+		}
+		return methodMap;
+	}
+	
+	public static Map<String, Set<MethodKey>> getMapFromTypeToMethod(
+			Set<MethodKey> methods)
+	{
+		Map<String, Set<MethodKey>> map = new HashMap<String, Set<MethodKey>>();
+		for(MethodKey m: methods){
+			if(!map.containsKey(m.getType())){
+				Set<MethodKey> set = new HashSet<MethodKey>();
+				map.put(m.getType(), set);
+			}
+			map.get(m.getType()).add(m);
+		}
+		return map;
+	}
+	
+	
+	
+	private Map<MethodKey, List<MethodInvocation>> getMapToMethodToData(
+			Migration migrationProp2) 
+	{
+		Map<MethodKey, List<MethodInvocation>> methodMap = new HashMap<MethodKey, List<MethodInvocation>>();
+		for(Object o: migrationProp.getRelationships().getAttributeOrMethodInvocationOrMethodParameter()){
+			if(o instanceof MethodInvocation){
+				MethodInvocation method = (MethodInvocation)o;
+				
+				String toType = method.getTo().getQualifiedType();
+				String toMethodSignature = getMethodSignature(method.getTo().getToMethod());
+				
+				MethodKey toMethod = new MethodKey(toType, toMethodSignature);
+				
+				if(!methodMap.containsKey(toMethod)){
+					List<MethodInvocation> toSet = new ArrayList<MethodInvocation>();
+					methodMap.put(toMethod, toSet);
+				}
+				methodMap.get(toMethod).add(method);
+			}
+		}
+		return methodMap;
+	}
+	
+	
+	public static String getMethodSignature(Signature signature){
+		StringBuilder sb = new StringBuilder();
+		for(Parameter p: signature.getParameters().getParameter()){
+			sb.append(p.getParamType());
+			sb.append(",");
+		}
+		String params = (sb.length() > 0)? sb.substring(0, sb.length()-1): sb.toString();
+		String methodSignature = signature.getReturnType() +  " " + signature.getMethodName() + "(" + params +")";
+		return methodSignature;
+	}
+
+
+	
+
+
+	
+	
+
+
+
+
+
+
+
 	
 	
 }

@@ -1,7 +1,6 @@
 package uniandes.migration.processor;
 
 import static org.junit.Assert.*;
-import uniandes.migration.generated.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +16,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtFieldReference;
 import uniandes.migration.invoker.Invoker;
+import uniandes.migration.util.MethodKey;
 import uniandes.migration.util.PropertiesMap;
 
 public class CreateMicroServiceAnnotationProcessorTest {
@@ -33,7 +33,7 @@ public class CreateMicroServiceAnnotationProcessorTest {
 		invoker.invokeSpoon(PROCESSOR, LEGACY_CODE_PATH);
 		
 		Map<String, CtType<?>> requiresMicroserviceAnnotation = CreateMicroServiceAnnotationProcessor
-        		.getRequiresMicroserviceAnnotation();
+				.microservices;
         assertTrue(requiresMicroserviceAnnotation.size() == 9);
         assertTrue(requiresMicroserviceAnnotation.containsKey("co.uniandes.app.MyClassA"));
         assertTrue(requiresMicroserviceAnnotation.containsKey("co.uniandes.app.MyClassB"));
@@ -49,29 +49,30 @@ public class CreateMicroServiceAnnotationProcessorTest {
 	}
 	
 	@Test
-	public void testFindAtributes() {
+	public void testFindConsumeMethods() {
 		// Invoke spoon processor for methods
         
 		Invoker invoker = new Invoker();
 		invoker.invokeSpoon(PROCESSOR, LEGACY_CODE_PATH);
 		
-		Map<String, CtFieldReference<?>> atributesRequiringConsumeAnotation = CreateMicroServiceAnnotationProcessor
-        		.getAtributesRequiringConsumeAnotation();
-        assertTrue(atributesRequiringConsumeAnotation.size() == 1);
-        assertTrue(atributesRequiringConsumeAnotation.containsKey("co.uniandes.app.MyClassA#a"));
+		Map<MethodKey,CtMethod<?>> consumeMethods = CreateMicroServiceAnnotationProcessor
+        		.consumeMethods;
+        assertTrue(consumeMethods.size() == 1);
+        assertTrue(consumeMethods.containsKey(new MethodKey("co.uniandes.app.MyClassB", "void foo1(int)")));
 	}
 	
 	@Test
-	public void testFindMethods() {
+	public void testFindProduceMethods() {
 		// Invoke spoon processor for methods
         
 		Invoker invoker = new Invoker();
 		invoker.invokeSpoon(PROCESSOR, LEGACY_CODE_PATH);
 		
-		Map<String, CtMethod<?>> atributesRequiringConsumeAnotation = CreateMicroServiceAnnotationProcessor
-        		.getMethodsRequiringConsumeAnotation();
-        assertTrue(atributesRequiringConsumeAnotation.size() == 1);
-        assertTrue(atributesRequiringConsumeAnotation.containsKey("void foo1(int)"));
+		Map<MethodKey,CtMethod<?>> producesMethods = CreateMicroServiceAnnotationProcessor
+        		.producesMethods;
+        assertTrue(producesMethods.size() == 2);
+        assertTrue(producesMethods.containsKey(new MethodKey("co.uniandes.app.MyClassB", "void foo1(int)")));
+        assertTrue(producesMethods.containsKey(new MethodKey("co.uniandes.app.MyClassC", "void bar1(int)")));
 	}
 
 }

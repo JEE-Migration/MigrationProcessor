@@ -1,7 +1,6 @@
 package uniandes.migration.processor;
 
 import static org.junit.Assert.*;
-import uniandes.migration.generated.*;
 
 import java.util.Map;
 

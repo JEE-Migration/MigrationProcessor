@@ -12,11 +12,14 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Consume {
-    String path() default "";
-
+	
+	String microservice();
+	String path() default "";
     HttpMethod method();
+    String [] parameterTypes();
+    String returnValue();
+
+    //?????
     String injectionName();
-    Class returnValue();
-
-
+    
 }

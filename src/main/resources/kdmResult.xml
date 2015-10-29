@@ -21,19 +21,7 @@
 	</microservices>
 	
 	<relationships>
-		<attribute>
-			<from>
-				<qualifiedType>co.uniandes.app.MyClassA</qualifiedType>
-				<sourceMicroservice>A</sourceMicroservice>
-			</from>
-			<to>
-				<qualifiedType>co.uniandes.app.MyClassA</qualifiedType>
-				<targetMicroservice>A</targetMicroservice>
-			</to>
-			<annotations>
-				<annotation>CDI</annotation>
-			</annotations>
-		</attribute>
+		
 		<methodInvocation>
 			<from>
 				<qualifiedType>co.uniandes.app.MyClassB</qualifiedType>
@@ -65,43 +53,8 @@
 					</parameters>
 				</toMethod>
 			</to>
-
-
 		</methodInvocation>	
 		
-		<methodParameter>
-			<from>
-				<qualifiedType>co.uniandes.app.MyClassC</qualifiedType>
-				<sourceMicroservice>C</sourceMicroservice>
-				<fromMethod>
-					<visibility>public</visibility>
-					<returnType>void</returnType>
-					<methodName>foo2</methodName>
-					<parameters>
-						<parameter>
-							<paramType>int</paramType>
-							<paramName>param</paramName>
-						</parameter>
-					</parameters>
-				</fromMethod>
-			</from>
-			<to>
-				<qualifiedType>co.uniandes.app.MyClassA</qualifiedType>
-				<targetMicroservice>A</targetMicroservice>
-				<toMethod>
-					<visibility>public</visibility>
-					<returnType>void</returnType>
-					<methodName>bar2</methodName>
-					<parameters>
-						<parameter>
-							<paramType>int</paramType>
-							<paramName>param</paramName>
-						</parameter>
-					</parameters>
-				</toMethod>
-			</to>
-
-
-		</methodParameter>	
+		
 	</relationships>
 </migration>
