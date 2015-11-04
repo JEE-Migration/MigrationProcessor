@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<migration
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation ="kdmResult.xsd">
+    <microservices>
+        <microservice name="Client Microservice">
+
+            <!-- EJB-->
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.ejbs.ClientLogic</qualifiedType>
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.api.IClientLogic</qualifiedType>
+
+            <!-- Persistence-->
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.persistence.ClientPersistence</qualifiedType>
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.persistence.CrudPersistence</qualifiedType>
+
+            <!-- Entity-->
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.entities.ClientEntity</qualifiedType>
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.entities.CartItemEntity</qualifiedType>
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.entities.ProductEntity</qualifiedType>
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.entities.CellPhoneEntity</qualifiedType>
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.entities.ProviderEntity</qualifiedType>
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.entities.OrderEntity</qualifiedType>
+
+            <!-- DTOS-->
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.dtos.ClientDTO</qualifiedType>
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.dtos.CartItemDTO</qualifiedType>
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.dtos.ProductDTO</qualifiedType>
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.dtos.CellPhoneDTO</qualifiedType>
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.dtos.ProviderDTO</qualifiedType>
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.dtos.OrderDTO</qualifiedType>
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.dtos.ShipDTO</qualifiedType>
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.dtos.PaymentMethodDTO</qualifiedType>
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.dtos.TaxDTO</qualifiedType>
+
+            <!-- Converter-->
+            <qualifiedType>co.edu.uniandes.csw.mpcellphone.converters.ClientConverter</qualifiedType>
+
+        </microservice>
+
+    </microservices>
+    <relationships>
+
+    </relationships>
+</migration>
