@@ -37,6 +37,9 @@ public class A{
 
 }
 
+#Para clonar el repositorio
+mvn scm:checkout
+
 #Para correr:
 mvn -Pexec_migration_step_one compile
 

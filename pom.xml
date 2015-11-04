@@ -15,6 +15,12 @@
         <legacyPath>${project.basedir}/src/legacy</legacyPath>
     </properties>
 
+	<!-- http://maven.apache.org/scm/git.html -->
+	<scm>
+		<connection>scm:git:https://github.com/le99/test.git</connection>
+		<developerConnection>scm:git:https://github.com/le99/test.git</developerConnection>
+		<url>https://github.com/le99/test.git</url>
+	</scm>
 
     <!-- EXECUTION PROFILE -->
     <profiles>
@@ -22,6 +28,29 @@
             <id>exec_migration_step_one</id>
             <build>
                 <plugins>
+
+					<plugin><!-- scm -->
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.4</version>
+						<configuration>
+							<providerImplementations>
+								<git>jgit</git>
+								<connectionType>developerConnection</connectionType>
+							</providerImplementations>
+						</configuration>
+						<dependencies>
+							<dependency>
+								<groupId>org.apache.maven.scm</groupId>
+								<artifactId>maven-scm-provider-jgit</artifactId>
+								<version>1.9.4</version>
+							</dependency>
+						</dependencies>
+					</plugin><!-- scm -->
+                
+                	
+                
+                
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
