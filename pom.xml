@@ -12,14 +12,15 @@
     <properties>
         <!--<processor>${project.basedir}/src/main/java/uniandes/migration/processor/CreateMicroServiceAnnotationProcessor.java</processor>-->
         <processor>uniandes.migration.processor.CreateMicroServiceAnnotationProcessor</processor>
-        <legacyPath>${project.basedir}/src/legacy</legacyPath>
+        <legacyPath>${project.basedir}/target/checkout</legacyPath>
+        <gitRepo>https://github.com/le99/test.git</gitRepo>
     </properties>
 
 	<!-- http://maven.apache.org/scm/git.html -->
 	<scm>
-		<connection>scm:git:https://github.com/le99/test.git</connection>
-		<developerConnection>scm:git:https://github.com/le99/test.git</developerConnection>
-		<url>https://github.com/le99/test.git</url>
+		<connection>scm:git:${gitRepo}</connection>
+		<developerConnection>scm:git:${gitRepo}</developerConnection>
+		<url>${gitRepo}</url>
 	</scm>
 
     <!-- EXECUTION PROFILE -->
@@ -47,8 +48,6 @@
 							</dependency>
 						</dependencies>
 					</plugin><!-- scm -->
-                
-                	
                 
                 
                     <plugin>
