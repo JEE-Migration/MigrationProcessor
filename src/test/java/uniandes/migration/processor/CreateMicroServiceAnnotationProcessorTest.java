@@ -23,7 +23,8 @@ public class CreateMicroServiceAnnotationProcessorTest {
 
 	private static final String PROCESSOR = "uniandes.migration.processor.CreateMicroServiceAnnotationProcessor";
 	private static String LEGACY_CODE_PATH = "./src/legacy";
-	
+//	private static String LEGACY_CODE_PATH = "./target/checkout/MarketplaceProject.mock";
+//	private static String LEGACY_CODE_PATH = "./target/checkout";
 	
 	@Test
 	public void testFindMicroservices() {
