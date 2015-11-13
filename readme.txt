@@ -40,7 +40,7 @@ public class A{
 #Para clonar el repositorio
 mvn scm:checkout
 
-#Para correr:
+#Para correr, descarga el codigo tambien:
 mvn -Pexec_migration_step_one compile
 
 
