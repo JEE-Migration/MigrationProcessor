@@ -31,7 +31,9 @@ import java.util.Set;
  */
 public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtType<?>>{
 
-	public static final String PATH_TO_MODEL_XML = "./src/main/resources/kdmResult.xml";
+//	public static final String PATH_TO_MODEL_XML = "./src/main/resources/kdmResult.xml";
+	public static final String PATH_TO_MODEL_XML = "./src/main/resources/marketplace.xml";
+	
 	
 	private Map<String, CtAnnotationType<?>> annotations;
 	
@@ -93,6 +95,7 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtT
         	annotateMethodWithConsumes(t, consumeMethods.get(t));
         }
         
+        int n = 0;
         for(MethodKey t: producesMethods.keySet()){
         	annotateMethodWithProvides(t, producesMethods.get(t));
         }
@@ -216,14 +219,13 @@ public class CreateMicroServiceAnnotationProcessor extends AbstractProcessor<CtT
     }
     
     public String[] getMethodParamterTypes(CtMethod ctMethod){
-    	String[] parameterTypes = new String[ctMethod.getParameters().size()];
-    	int i = 0;
+    	List <String> parameterTypes = new ArrayList<String>();
     	for(Object o:ctMethod.getParameters()){
     		CtParameter<?> p = (CtParameter)o;
     		String type = p.getType().getQualifiedName();
-    		parameterTypes[i] = type;
+    		parameterTypes.add(type);
     	}
-    	return parameterTypes;
+    	return (String [])parameterTypes.toArray(new String[parameterTypes.size()]);
     }
     
     public String getReturnType(CtMethod ctMethod){
