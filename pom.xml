@@ -7,7 +7,7 @@
     <groupId>co.edu.uniandes</groupId>
     <artifactId>MigrationProcessor</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <!-- PROPERTIES -->
     <properties>
@@ -18,7 +18,7 @@
         
         <!-- <legacyPath>${project.basedir}/../marketplace/Marketplace-Tesis</legacyPath> -->
         <!-- <gitRepo>https://github.com/JEE-Migration/Marketplace-Tesis.git</gitRepo> -->
-        <gitRepo>https://github.com/JEE-Migration/MarketPlace.git</gitRepo>
+        <gitRepo>https://github.com/le99/marketplace.git</gitRepo>
         
     </properties>
 
@@ -41,6 +41,7 @@
 						<artifactId>maven-scm-plugin</artifactId>
 						<version>1.9.4</version>
 						<!-- Comentar execution para no descargar el codigo automaticamnte -->
+						
 						<executions>
 						 	<execution>
 						 		<goals>
@@ -49,6 +50,7 @@
 						 		<phase>process-sources</phase>
 						 	</execution>
 						</executions>
+						
 						<configuration>
 							<providerImplementations>
 								<git>jgit</git>
